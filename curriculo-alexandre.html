@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alexandre Paes — Dev & Automação</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050810;
+  --surface: #090d1a;
+  --card: #0d1225;
+  --border: #1a2140;
+  --blue: #3b82f6;
+  --cyan: #06b6d4;
+  --green: #10b981;
+  --purple: #8b5cf6;
+  --white: #e8edf8;
+  --muted: #4a5580;
+  --dim: #1e2847;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Cabinet Grotesk', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CUSTOM CURSOR */
+.cursor {
+  width: 8px; height: 8px;
+  background: var(--cyan);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.1s;
+  mix-blend-mode: screen;
+}
+.cursor-ring {
+  width: 32px; height: 32px;
+  border: 1px solid rgba(6,182,212,0.4);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  transition: all 0.12s ease;
+  mix-blend-mode: screen;
+}
+
+/* GRID BG */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+/* GLOW ORBS */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  opacity: 0.12;
+}
+.orb-1 { width: 500px; height: 500px; background: var(--blue); top: -100px; left: -100px; }
+.orb-2 { width: 400px; height: 400px; background: var(--cyan); bottom: 0; right: -100px; }
+.orb-3 { width: 300px; height: 300px; background: var(--purple); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(5,8,16,0.7);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--cyan);
+  letter-spacing: 0.1em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--cyan); }
+
+.nav-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--green);
+}
+
+.status-dot {
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: blink 2s ease-in-out infinite;
+}
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 8rem 2rem 4rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.hero-content { max-width: 700px; }
+
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--cyan);
+  background: rgba(6,182,212,0.08);
+  border: 1px solid rgba(6,182,212,0.2);
+  padding: 6px 14px;
+  border-radius: 4px;
+  margin-bottom: 2rem;
+  animation: fadeUp 0.6s ease both;
+}
+
+.hero-tag::before { content: '> '; opacity: 0.5; }
+
+.hero-name {
+  font-family: 'Clash Display', sans-serif;
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+
+.hero-name .first { color: var(--white); }
+.hero-name .last {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(59,130,246,0.6);
+  display: block;
+}
+
+.hero-role {
+  margin-top: 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  color: var(--blue);
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+
+.hero-role span { color: var(--cyan); }
+
+.hero-desc {
+  margin-top: 1.5rem;
+  font-size: 1.05rem;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 520px;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+
+.hero-contacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  animation: fadeUp 0.6s 0.4s ease both;
+}
+
+.contact-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.contact-chip:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: rgba(59,130,246,0.08);
+  transform: translateY(-2px);
+}
+
+/* COUNTERS */
+.counters {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 4rem auto;
+  max-width: 1100px;
+  animation: fadeUp 0.6s 0.5s ease both;
+}
+
+.counter-item {
+  background: var(--card);
+  padding: 2rem;
+  text-align: center;
+}
+
+.counter-num {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 3rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+
+.counter-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-top: 0.5rem;
+}
+
+/* SECTIONS */
+section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.section-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  background: rgba(6,182,212,0.08);
+  border: 1px solid rgba(6,182,212,0.2);
+  padding: 4px 12px;
+  border-radius: 4px;
+}
+
+.section-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--border), transparent);
+}
+
+/* EXPERIENCE */
+.exp-list { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.exp-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.8rem 2rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.exp-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--blue), var(--cyan));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.exp-card:hover {
+  border-color: rgba(59,130,246,0.3);
+  transform: translateX(4px);
+  box-shadow: 0 8px 32px rgba(59,130,246,0.08);
+}
+
+.exp-card:hover::before { opacity: 1; }
+
+.exp-card.current { border-color: rgba(6,182,212,0.3); }
+.exp-card.current::before { opacity: 1; background: linear-gradient(to bottom, var(--cyan), var(--green)); }
+
+.exp-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.exp-company {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--white);
+}
+
+.exp-period {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--muted);
+  background: var(--dim);
+  padding: 4px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.exp-period.current-badge {
+  color: var(--green);
+  background: rgba(16,185,129,0.1);
+  border: 1px solid rgba(16,185,129,0.2);
+}
+
+.exp-role {
+  font-size: 0.85rem;
+  color: var(--cyan);
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+
+.exp-desc {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.exp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 1rem;
+}
+
+.tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  background: var(--surface);
+  transition: all 0.2s;
+}
+
+.tag.blue { border-color: rgba(59,130,246,0.3); color: var(--blue); background: rgba(59,130,246,0.06); }
+.tag.cyan { border-color: rgba(6,182,212,0.3); color: var(--cyan); background: rgba(6,182,212,0.06); }
+.tag.green { border-color: rgba(16,185,129,0.3); color: var(--green); background: rgba(16,185,129,0.06); }
+.tag.purple { border-color: rgba(139,92,246,0.3); color: var(--purple); background: rgba(139,92,246,0.06); }
+
+/* SKILLS */
+.skills-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.skill-group {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.6rem;
+}
+
+.skill-group-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.skill-group-title::before {
+  content: '';
+  width: 20px; height: 1px;
+  background: currentColor;
+}
+
+.skill-item {
+  margin-bottom: 1rem;
+}
+
+.skill-item:last-child { margin-bottom: 0; }
+
+.skill-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.skill-name { font-size: 0.88rem; font-weight: 600; }
+
+.skill-pct {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+.skill-bar {
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.skill-fill {
+  height: 100%;
+  border-radius: 2px;
+  width: 0;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fill-blue { background: linear-gradient(90deg, var(--blue), var(--cyan)); }
+.fill-green { background: linear-gradient(90deg, var(--green), var(--cyan)); }
+.fill-purple { background: linear-gradient(90deg, var(--purple), var(--blue)); }
+
+/* EDUCATION */
+.edu-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  transition: all 0.3s;
+}
+
+.edu-card:hover {
+  border-color: rgba(139,92,246,0.3);
+  box-shadow: 0 8px 32px rgba(139,92,246,0.06);
+}
+
+.edu-icon {
+  width: 48px; height: 48px;
+  background: rgba(139,92,246,0.1);
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.edu-degree {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.edu-school { font-size: 0.88rem; color: var(--purple); font-weight: 600; }
+.edu-period {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* LANGUAGES */
+.lang-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.lang-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.4rem;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.lang-card:hover { border-color: rgba(59,130,246,0.3); transform: translateY(-3px); }
+
+.lang-flag { font-size: 2rem; margin-bottom: 0.6rem; }
+.lang-name { font-family: 'Clash Display', sans-serif; font-size: 1.1rem; font-weight: 600; }
+.lang-level {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+}
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--border);
+  text-align: center;
+  padding: 2rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+footer span { color: var(--cyan); }
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+@media (max-width: 640px) {
+  .counters { grid-template-columns: 1fr; }
+  nav .nav-links { display: none; }
+  .hero-name { font-size: 3rem; }
+  body { cursor: auto; }
+  .cursor, .cursor-ring { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">alexandre.paes</div>
+  <ul class="nav-links">
+    <li><a href="#experiencia">Experiência</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#formacao">Formação</a></li>
+  </ul>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    Disponível para oportunidades
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-tag">Analista de Desenvolvimento · Automação & BI</div>
+    <h1 class="hero-name">
+      <span class="first">Alexandre</span>
+      <span class="last">Paes</span>
+    </h1>
+    <div class="hero-role">
+      <span>// </span>VBA · Power Apps · Power Automate · Power BI
+    </div>
+    <p class="hero-desc">
+      Analista de desenvolvimento especializado em automação de processos e inteligência de dados. Transformo fluxos manuais em soluções inteligentes com o ecossistema Microsoft, eliminando retrabalho e gerando valor real pra operação.
+    </p>
+    <div class="hero-contacts">
+      <a href="https://www.linkedin.com/in/alexandre-paes-442ba9233" target="_blank" class="contact-chip">
+        💼 Linkedin
+      </a>
+      <a href="mailto:alexandrearaujopaes@gmail.com" class="contact-chip">
+        ✉️ alexandrearaujopaes@gmail.com
+      </a>
+      <a class="contact-chip">
+        📍 Poços de Caldas, MG
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- COUNTERS -->
+<div class="counters reveal" id="counters">
+  <div class="counter-item">
+    <div class="counter-num" data-target="3">0</div>
+    <div class="counter-label">Anos de experiência</div>
+  </div>
+  <div class="counter-item">
+    <div class="counter-num" data-target="45">0</div>
+    <div class="counter-label">Automações entregues</div>
+  </div>
+  <div class="counter-item">
+    <div class="counter-num" data-target="800">0</div>
+    <div class="counter-label">Horas de trabalho eliminadas</div>
+  </div>
+</div>
+
+<!-- EXPERIENCE -->
+<section id="experiencia">
+  <div class="section-header reveal">
+    <div class="section-tag">Experiência</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="exp-list">
+
+    <div class="exp-card current reveal">
+      <div class="exp-top">
+        <div class="exp-company">NeoBPO <span style="color:var(--muted);font-size:0.8rem;font-weight:400">(Alcoa)</span></div>
+        <div class="exp-period current-badge">● OUT 2022 – PRESENTE</div>
+      </div>
+      <div class="exp-role">Analista de Desenvolvimento</div>
+      <div class="exp-desc">
+        Desenvolvimento de soluções de automação e análise de dados para a operação da Alcoa. Construção de macros, aplicativos low-code e dashboards para eliminação de processos manuais e apoio à tomada de decisão.
+      </div>
+      <div class="exp-tags">
+        <span class="tag blue">VBA</span>
+        <span class="tag cyan">Power Apps</span>
+        <span class="tag cyan">Power Automate</span>
+        <span class="tag green">Power BI</span>
+        <span class="tag blue">SharePoint</span>
+        <span class="tag purple">Taxone</span>
+        <span class="tag purple">Mastersaf</span>
+      </div>
+    </div>
+
+    <div class="exp-card reveal">
+      <div class="exp-top">
+        <div class="exp-company">Stefanini <span style="color:var(--muted);font-size:0.8rem;font-weight:400">(Alcoa)</span></div>
+        <div class="exp-period">MAR 2022 – OUT 2022</div>
+      </div>
+      <div class="exp-role">Analista de Suporte Jr</div>
+      <div class="exp-desc">
+        Suporte técnico N1/N2 via ServiceNow, gestão de usuários em Active Directory, suporte a Oracle Database e ao pacote Microsoft Office.
+      </div>
+      <div class="exp-tags">
+        <span class="tag blue">ServiceNow</span>
+        <span class="tag purple">Oracle DB</span>
+        <span class="tag">Active Directory</span>
+        <span class="tag">MS Office</span>
+        <span class="tag cyan">Microsoft Authenticator</span>
+      </div>
+    </div>
+
+    <div class="exp-card reveal">
+      <div class="exp-top">
+        <div class="exp-company">Prefeitura de Poços de Caldas</div>
+        <div class="exp-period">OUT 2014 – MAR 2022</div>
+      </div>
+      <div class="exp-role">Auxiliar Administrativo Nível 3</div>
+      <div class="exp-desc">
+        Agendamento de consultas, atividades administrativas e gerenciamento de usuários no sistema SUS durante quase 8 anos.
+      </div>
+      <div class="exp-tags">
+        <span class="tag">Sistema SUS</span>
+        <span class="tag">Gestão Administrativa</span>
+        <span class="tag">Atendimento</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-header reveal">
+    <div class="section-tag">Skills</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="skills-container">
+
+    <div class="skill-group reveal">
+      <div class="skill-group-title">Automação & Low-code</div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">VBA (Excel/Office)</span><span class="skill-pct">95%</span></div>
+        <div class="skill-bar"><div class="skill-fill fill-blue" data-width="95"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Power Automate</span><span class="skill-pct">90%</span></div>
+        <div class="skill-bar"><div class="skill-fill fill-blue" data-width="90"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Power Apps</span><span class="skill-pct">88%</span></div>
+        <div class="skill-bar"><div class="skill-fill fill-blue" data-width="88"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">SharePoint</span><span class="skill-pct">82%</span></div>
+        <div class="skill-bar"><div class="skill-fill fill-blue" data-width="82"></div></div>
+      </div>
+    </div>
+
+    <div class="skill-group reveal">
+      <div class="skill-group-title">Data & BI</div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Excel Avançado</span><span class="skill-pct">97%</span></div>
+        <div class="skill-bar"><div class="skill-fill fill-green" data-width="97"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Power BI</span><span class="skill-pct">88%</span></div>
+        <div class="skill-bar"><div class="skill-fill fill-green" data-width="88"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">SQL</span><span class="skill-pct">78%</span></div>
+        <div class="skill-bar"><div class="skill-fill fill-green" data-width="78"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Low Code</span><span class="skill-pct">70%</span></div>
+        <div class="skill-bar"><div class="skill-fill fill-green" data-width="70"></div></div>
+      </div>
+    </div>
+
+    <div class="skill-group reveal">
+      <div class="skill-group-title">Linguagens de Programação</div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Unreal Engine (C++ / BP)</span><span class="skill-pct">75%</span></div>
+        <div class="skill-bar"><div class="skill-fill fill-purple" data-width="75"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">C / C++</span><span class="skill-pct">70%</span></div>
+        <div class="skill-bar"><div class="skill-fill fill-purple" data-width="70"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Python</span><span class="skill-pct">65%</span></div>
+        <div class="skill-bar"><div class="skill-fill fill-purple" data-width="65"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Java</span><span class="skill-pct">60%</span></div>
+        <div class="skill-bar"><div class="skill-fill fill-purple" data-width="60"></div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="formacao">
+  <div class="section-header reveal">
+    <div class="section-tag">Formação</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="edu-card reveal">
+    <div class="edu-icon">🎓</div>
+    <div>
+      <div class="edu-degree">Ciências da Computação</div>
+      <div class="edu-school">PUC Minas — Poços de Caldas</div>
+      <div class="edu-period">2019 – 2025 · Graduação</div>
+    </div>
+  </div>
+</section>
+
+<!-- LANGUAGES -->
+<section>
+  <div class="section-header reveal">
+    <div class="section-tag">Idiomas</div>
+    <div class="section-line"></div>
+  </div>
+  <div class="lang-grid">
+    <div class="lang-card reveal">
+      <div class="lang-flag">🇧🇷</div>
+      <div class="lang-name">Português</div>
+      <div class="lang-level">Nativo</div>
+    </div>
+    <div class="lang-card reveal">
+      <div class="lang-flag">🇺🇸</div>
+      <div class="lang-name">Inglês</div>
+      <div class="lang-level">Profissional</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>Alexandre de Araújo Paes</span> · Poços de Caldas, MG · alexandrearaujopaes@gmail.com
+</footer>
+
+<script>
+// CURSOR
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx - 4 + 'px';
+  cursor.style.top = my - 4 + 'px';
+});
+
+function animateRing() {
+  rx += (mx - rx - 16) * 0.12;
+  ry += (my - ry - 16) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top = ry + 'px';
+  requestAnimationFrame(animateRing);
+}
+animateRing();
+
+document.querySelectorAll('a, button, .exp-card, .lang-card').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.transform = 'scale(2.5)';
+    ring.style.transform = 'scale(1.4)';
+    ring.style.borderColor = 'rgba(59,130,246,0.6)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.transform = 'scale(1)';
+    ring.style.transform = 'scale(1)';
+    ring.style.borderColor = 'rgba(6,182,212,0.4)';
+  });
+});
+
+// SCROLL REVEAL
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+        // Trigger counters
+        if (entry.target.id === 'counters') animateCounters();
+        // Trigger skill bars
+        entry.target.querySelectorAll('.skill-fill').forEach(bar => {
+          bar.style.width = bar.dataset.width + '%';
+        });
+      }, i * 80);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// COUNTERS
+function animateCounters() {
+  document.querySelectorAll('.counter-num').forEach(el => {
+    const target = parseInt(el.dataset.target);
+    const duration = 1800;
+    const start = performance.now();
+    function tick(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.floor(ease * target) + (target === 800 ? '+' : target === 45 ? '+' : '+');
+      if (progress < 1) requestAnimationFrame(tick);
+      else el.textContent = target + '+';
+    }
+    requestAnimationFrame(tick);
+  });
+}
+</script>
+</body>
+</html>
